@@ -1,0 +1,34 @@
+{
+  "status": "passed",
+  "browser": "Chromium / Chrome headless",
+  "checks": [
+    "Halaman awal, 8 data contoh, 3 NIM, 26 SKS, dan 5 baris",
+    "Pagination, tombol batas halaman, dan pilihan 5/10 baris",
+    "Pencarian real-time berdasarkan nama, NIM, kode kuliah, kode pos, dan hasil kosong",
+    "Form kosong ditolak, danger berwarna merah, dan error pada kolom",
+    "NIM nonangka ditolak tanpa menambah data",
+    "Dropdown mata kuliah mengikuti prodi dan mereset pilihan lama",
+    "Cascade wilayah, perubahan induk, kode pos otomatis/read-only, dan alamat tidak lengkap ditolak",
+    "Tambah data, ringkasan SKS/NIM, toast, dan form kembali kosong",
+    "Mata kuliah ganda untuk NIM yang sama ditolak meskipun kelas berbeda",
+    "Edit memuat semua dropdown dan menyimpan perubahan alamat tanpa menggandakan data",
+    "Batal edit tidak mengubah data dan mengakhiri mode edit",
+    "Konfirmasi hapus, Escape, batal, dan penghapusan beserta pembaruan badge",
+    "Batas 24 SKS per NIM dan perhitungan ulang yang benar saat edit",
+    "Input mirip HTML ditampilkan sebagai teks tanpa dieksekusi",
+    "Refresh memulai sesi baru dengan data contoh sesuai model array memori",
+    "Halaman dijepit setelah baris terakhir dihapus dan kondisi seluruh data kosong",
+    "Layout 375, 768, landscape 812, 1024, dan 1440 piksel tanpa overflow halaman",
+    "Reduced motion, skip link, label form, dan interaksi keyboard",
+    "Tidak ada error JavaScript atau console selama pengujian"
+  ],
+  "passed": 19,
+  "javascript_errors": [],
+  "viewports": [
+    375,
+    768,
+    812,
+    1024,
+    1440
+  ]
+}
