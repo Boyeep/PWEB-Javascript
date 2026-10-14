@@ -12,3 +12,11 @@ Dataset dipilih untuk latihan dropdown, bukan katalog seluruh Indonesia. Enam ke
 | Jawa Barat | Bandung | Sukasari | Sarijadi | 40151 | [Data Pokok TK Sarijadi, Kemendikdasmen](https://dapo.dikdasmen.go.id/sekolah/0D91BBBC639B880D05DD) |
 
 Data nama mahasiswa dan NIM sepenuhnya fiktif. Nama mata kuliah, kode kuliah, kelas, semester, dan bobot SKS dibuat sebagai katalog simulasi untuk tugas Pemrograman Web.
+
+## Referensi latihan dan JavaScript
+
+- [JavaScript - Latihan 1, Code Studio](https://codestudio80.blogspot.com/2026/04/javascript-latihan-1.html): referensi form registrasi umum dan form validasi email yang diberikan dalam tugas.
+- [ARIA combobox, MDN](https://developer.mozilla.org/en-US/docs/Web/Accessibility/ARIA/Reference/Roles/combobox_role): referensi pola input dengan daftar rekomendasi, atribut ARIA, dan interaksi keyboard.
+- [Client-side form validation, MDN](https://developer.mozilla.org/en-US/docs/Learn_web_development/Extensions/Forms/Form_validation): referensi validasi input browser dan feedback form.
+
+Seluruh nama dosen juga fiktif. Kode dan tampilan disusun untuk proyek ini; referensi digunakan sebagai panduan perilaku latihan.

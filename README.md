@@ -9,9 +9,13 @@ Latihan **Dropdown & Kode Pos JavaScript** berupa registrasi mata kuliah interak
 ## Fitur
 
 - Form nama, NIM, program studi, mata kuliah, kelas, dan alamat.
+- Autocomplete nama mahasiswa saat mengetik; rekomendasi dapat dipilih dengan mouse atau tombol panah dan Enter. Pemilihan mengisi NIM dan prodi.
+- Kolom dosen wajib dengan pilihan mengikuti mata kuliah. Dosen ikut ditampilkan di tabel dan dapat dicari.
 - Dropdown mata kuliah mengikuti program studi; pilihan lama dikosongkan saat prodi berubah.
 - Dropdown bertingkat **provinsi → kota → kecamatan → kelurahan**.
 - Kode pos terisi otomatis berdasarkan kelurahan, dengan input `readonly`.
+- Pencarian kode pos terpisah dengan input provinsi, kabupaten/kota, dan kecamatan; output menampilkan kode pos serta informasi kelurahan. Kata kunci nama/kode pos bersifat opsional.
+- Halaman [Latihan JavaScript 1](latihan-validasi.html) untuk validasi form registrasi umum dan validasi email mandiri.
 - Validasi kolom wajib dan NIM 6–15 digit; kesalahan tampil sebagai pesan danger merah.
 - Tambah, edit, batal edit, dan hapus dengan dialog konfirmasi.
 - Pencarian real-time untuk nama, NIM, prodi, mata kuliah, kelas, wilayah, dan kode pos.
@@ -28,6 +32,17 @@ Setiap baris mewakili **satu pilihan mata kuliah**, sehingga satu mahasiswa dapa
 Data registrasi disimpan pada **array objek di memori browser**. Perubahan berlaku selama halaman terbuka; refresh mengembalikan data contoh. Tidak menggunakan backend, database, atau localStorage.
 
 Dataset alamat dibatasi pada 2 provinsi, 2 kota, 4 kecamatan, dan 6 kelurahan: sebagian wilayah Makassar dan Bandung. Sumber kode pos tercantum di [docs/SOURCES.md](docs/SOURCES.md).
+
+Nama mahasiswa, NIM, dan empat dosen merupakan data fiktif. Rekomendasi nama menggunakan direktori tiga mahasiswa contoh; pengguna tetap boleh memasukkan nama baru.
+
+## Checklist tugas
+
+- [x] Registrasi nama mahasiswa, NIM, mata kuliah, dan dosen; rekomendasi nama muncul saat mengetik.
+- [x] Pencarian kode pos dari provinsi, kabupaten/kota, dan kecamatan, dengan kode pos serta informasi daerah sebagai output.
+- [x] Latihan JavaScript 1: form nama, alamat, email, password, kursus, perguruan tinggi, persetujuan, submit/reset; serta form validasi email.
+- [x] List dropdown dinamis untuk prodi → mata kuliah → dosen dan provinsi → kota → kecamatan → kelurahan.
+
+Pemetaan implementasi dan bukti pengujian tersedia di [docs/CHECKLIST.md](docs/CHECKLIST.md).
 
 ## Menjalankan
 
@@ -47,12 +62,16 @@ PWEB-Javascript/
 ├── style.css             # Layout, warna, komponen, dan responsivitas
 ├── data.js               # Katalog kuliah, wilayah, dan data contoh
 ├── app.js                # Dropdown, validasi, CRUD, pencarian, render
+├── postal.js             # Pencarian kode pos sampai tingkat kecamatan
+├── latihan-validasi.html # Form latihan JavaScript 1
+├── validation.js         # Validasi registrasi umum dan email mandiri
 ├── assets/favicon.svg
 ├── screenshots/          # Desktop, mobile, edit, validasi
 ├── docs/
 │   ├── blogspot.html      # Artikel HTML siap tempel ke Blogger
 │   ├── BLOGSPOT.md        # Judul dan cara posting
-│   └── SOURCES.md         # Referensi kode pos
+│   ├── SOURCES.md         # Referensi kode pos
+│   └── CHECKLIST.md       # Pemetaan empat poin tugas
 ├── tests/check_app.py     # Pengujian alur pengguna
 ├── qa-report.json         # Hasil pengujian
 └── README.md
@@ -66,9 +85,13 @@ Event `submit` memvalidasi input sebelum memutasi array. `editRecord()` memuat d
 
 `render()` memfilter registrasi berdasarkan kata pencarian, mengambil irisan data untuk halaman aktif, lalu memperbarui tabel, badge, ringkasan, dan tombol pagination. Semua teks dari pengguna dirender dengan `textContent`.
 
+`showSuggestions()` memfilter direktori mahasiswa saat nama diketik. `chooseStudent()` memilih rekomendasi dan mengisi identitas. `updateLecturers()` membentuk dropdown dosen berdasarkan mata kuliah dan mengosongkan pilihan yang sudah tidak sesuai.
+
+`postal.js` menggunakan dropdown provinsi, kota, dan kecamatan untuk mencari seluruh kelurahan pada kecamatan tersebut. Setiap hasil menampilkan kode pos dan empat tingkat informasi wilayah. `validation.js` memeriksa kolom wajib, format email menggunakan `checkValidity()`, panjang password, pilihan kursus, serta checkbox persetujuan. Form ini hanya latihan validasi di browser; hasilnya tidak dikirim ke server dan password tidak disimpan.
+
 ## Pengujian
 
-**19 kelompok pemeriksaan lolos**, tanpa error JavaScript/console. Lihat [qa-report.json](qa-report.json). Pemeriksaan meliputi dropdown, reset pilihan turunan, kode pos, validasi, CRUD, pencarian, pagination, batas SKS, input mirip HTML, keadaan kosong, dan refresh sesi. Layout diperiksa pada lebar 375, 768, 812 (landscape), 1024, dan 1440 piksel.
+**28 kelompok pemeriksaan lolos**, tanpa error JavaScript/console. Lihat [qa-report.json](qa-report.json). Pemeriksaan meliputi autocomplete, dosen, dropdown, reset pilihan turunan, pencarian kode pos, validasi registrasi/email, CRUD, pencarian, pagination, batas SKS, input mirip HTML, keadaan kosong, dan refresh sesi. Kedua halaman diperiksa pada lebar 375, 768, 812, 1024, dan 1440 piksel; halaman utama juga diperiksa dalam orientasi landscape.
 
 Untuk mengulang pemeriksaan, siapkan Python dan Playwright:
 

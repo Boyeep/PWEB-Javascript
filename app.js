@@ -6,13 +6,16 @@
   const regionIds = ['province', 'city', 'district', 'village'];
   const regionLabels = ['provinsi', 'kota', 'kecamatan', 'kelurahan'];
   let registrations = KRS_DATA.examples.map(([student, course, classGroup], index) => ({
-    ...KRS_DATA.students[student], id: `demo-${index + 1}`, course, classGroup
+    ...KRS_DATA.students[student], id: `demo-${index + 1}`, course, classGroup,
+    lecturer: KRS_DATA.courses[KRS_DATA.students[student].program].find((item) => item.id === course).lecturers[0]
   }));
   let editingId = null;
   let pendingDeleteId = null;
   let currentPage = 1;
   let pageSize = 5;
   let toastTimer;
+  let suggestedStudents = [];
+  let activeSuggestion = -1;
 
   function getCourse(record) {
     return KRS_DATA.courses[record.program]?.find((course) => course.id === record.course);
@@ -34,6 +37,57 @@
     setOptions($('course'), courses.map((item) => [item.id, `${item.name} (${item.credits} SKS)`]),
       program ? 'Pilih mata kuliah' : 'Pilih prodi terlebih dahulu');
     updateCourseInfo();
+    updateLecturers();
+  }
+
+  function updateLecturers() {
+    const course = getCourse({ program: $('program').value, course: $('course').value });
+    setOptions($('lecturer'), (course?.lecturers || []).map((id) => [id, KRS_DATA.lecturers[id]]),
+      course ? 'Pilih dosen pengampu' : 'Pilih mata kuliah dahulu');
+    clearFieldError('lecturer');
+  }
+
+  function closeSuggestions() {
+    $('name-suggestions').hidden = true;
+    $('name').setAttribute('aria-expanded', 'false');
+    $('name').removeAttribute('aria-activedescendant');
+    activeSuggestion = -1;
+  }
+
+  function showSuggestions() {
+    const query = $('name').value.trim().toLocaleLowerCase('id');
+    suggestedStudents = query ? KRS_DATA.students.filter((student) => student.name.toLocaleLowerCase('id').includes(query)) : [];
+    $('name-suggestions').replaceChildren(...suggestedStudents.map((student, index) => {
+      const option = document.createElement('div');
+      option.id = `student-option-${index}`;
+      option.dataset.index = index;
+      option.setAttribute('role', 'option');
+      option.setAttribute('aria-selected', 'false');
+      const name = document.createElement('strong');
+      name.textContent = student.name;
+      const details = document.createElement('small');
+      details.textContent = `${student.nim} · ${KRS_DATA.programs[student.program]}`;
+      option.append(name, details);
+      return option;
+    }));
+    activeSuggestion = -1;
+    $('name').removeAttribute('aria-activedescendant');
+    $('name-suggestions').hidden = suggestedStudents.length === 0;
+    $('name').setAttribute('aria-expanded', String(suggestedStudents.length > 0));
+  }
+
+  function chooseStudent(index) {
+    const student = suggestedStudents[index];
+    if (!student) return;
+    $('name').value = student.name;
+    $('nim').value = student.nim;
+    if ($('program').value !== student.program) {
+      $('program').value = student.program;
+      updateCourses();
+    }
+    ['name', 'nim', 'program'].forEach(clearFieldError);
+    closeSuggestions();
+    $('name').focus();
   }
 
   function updateCourseInfo() {
@@ -70,7 +124,7 @@
   }
 
   function clearValidation() {
-    ['name', 'nim', 'program', 'course', 'class-group', ...regionIds].forEach(clearFieldError);
+    ['name', 'nim', 'program', 'course', 'lecturer', 'class-group', ...regionIds].forEach(clearFieldError);
     $('form-alert').hidden = true;
     $('form-alert').textContent = '';
   }
@@ -88,6 +142,7 @@
 
   function clearForm() {
     editingId = null;
+    closeSuggestions();
     form.reset();
     clearValidation();
     updateCourses();
@@ -109,7 +164,7 @@
     return registrations.filter((record) => {
       const course = getCourse(record);
       const searchable = [record.name, record.nim, KRS_DATA.programs[record.program],
-        course.name, course.id, `Kelas ${record.classGroup}`, record.province,
+        course.name, course.id, KRS_DATA.lecturers[record.lecturer], `Kelas ${record.classGroup}`, record.province,
         record.city, record.district, record.village, getPostalCode(record)].join(' ');
       return searchable.toLocaleLowerCase('id').includes(query);
     });
@@ -133,7 +188,7 @@
     const course = getCourse(record);
     const row = document.createElement('tr');
     row.dataset.id = record.id;
-    row.innerHTML = '<td><div class="student-cell"><span class="avatar" aria-hidden="true"></span><div><strong class="cell-title"></strong><span class="cell-sub"></span></div></div></td><td><strong class="cell-title"></strong><span class="cell-sub"></span><div class="course-tags"><span class="mini-badge"></span><span class="mini-badge neutral"></span></div></td><td><strong class="postal-label"></strong><span class="cell-sub village"></span><span class="cell-sub city"></span></td><td><div class="row-actions"></div></td>';
+    row.innerHTML = '<td><div class="student-cell"><span class="avatar" aria-hidden="true"></span><div><strong class="cell-title"></strong><span class="cell-sub"></span></div></div></td><td><strong class="cell-title"></strong><span class="cell-sub"></span><span class="cell-sub lecturer"></span><div class="course-tags"><span class="mini-badge"></span><span class="mini-badge neutral"></span></div></td><td><strong class="postal-label"></strong><span class="cell-sub village"></span><span class="cell-sub city"></span></td><td><div class="row-actions"></div></td>';
     const cells = row.cells;
     const avatar = cells[0].querySelector('.avatar');
     avatar.textContent = record.name.split(/\s+/).slice(0, 2).map((word) => Array.from(word)[0]).join('').toUpperCase();
@@ -142,6 +197,7 @@
     cells[0].querySelector('.cell-sub').textContent = record.nim;
     cells[1].querySelector('.cell-title').textContent = course.name;
     cells[1].querySelector('.cell-sub').textContent = `${course.id} · ${KRS_DATA.programs[record.program]}`;
+    cells[1].querySelector('.lecturer').textContent = KRS_DATA.lecturers[record.lecturer];
     cells[1].querySelector('.mini-badge').textContent = `${course.credits} SKS`;
     cells[1].querySelector('.neutral').textContent = `Kelas ${record.classGroup}`;
     cells[2].querySelector('.postal-label').textContent = getPostalCode(record);
@@ -201,6 +257,7 @@
       id: editingId || (globalThis.crypto?.randomUUID?.() || `reg-${Date.now()}-${Math.random().toString(36).slice(2)}`),
       name: $('name').value.trim().replace(/\s+/g, ' '), nim: $('nim').value.trim(),
       program: $('program').value, course: $('course').value, classGroup: $('class-group').value,
+      lecturer: $('lecturer').value,
       ...Object.fromEntries(regionIds.map((id) => [id, $(id).value]))
     };
     const errors = {};
@@ -208,6 +265,7 @@
     if (!/^\d{6,15}$/.test(record.nim)) errors.nim = 'NIM harus terdiri dari 6–15 digit angka.';
     if (!KRS_DATA.programs[record.program]) errors.program = 'Pilih program studi.';
     if (!getCourse(record)) errors.course = 'Pilih mata kuliah sesuai program studi.';
+    if (!getCourse(record)?.lecturers.includes(record.lecturer)) errors.lecturer = 'Pilih dosen sesuai mata kuliah.';
     if (!['A', 'B'].includes(record.classGroup)) errors['class-group'] = 'Pilih kelas A atau B.';
     let branch = KRS_DATA.regions;
     regionIds.forEach((id, index) => {
@@ -240,6 +298,7 @@
 
   function editRecord(record) {
     clearValidation();
+    closeSuggestions();
     editingId = record.id;
     $('name').value = record.name;
     $('nim').value = record.nim;
@@ -247,6 +306,8 @@
     updateCourses();
     $('course').value = record.course;
     updateCourseInfo();
+    updateLecturers();
+    $('lecturer').value = record.lecturer;
     $('class-group').value = record.classGroup;
     regionIds.forEach((id, index) => {
       $(id).value = record[id];
@@ -286,13 +347,35 @@
   });
 
   $('program').addEventListener('change', () => { updateCourses(); clearFieldError('course'); });
-  $('course').addEventListener('change', updateCourseInfo);
+  $('course').addEventListener('change', () => { updateCourseInfo(); updateLecturers(); });
   regionIds.forEach((id, index) => $(id).addEventListener('change', () => {
     if (index < regionIds.length - 1) updateRegions(index + 1);
     else updatePostalCode();
   }));
-  ['name', 'nim', 'program', 'course', 'class-group', ...regionIds].forEach((id) => {
+  ['name', 'nim', 'program', 'course', 'lecturer', 'class-group', ...regionIds].forEach((id) => {
     $(id).addEventListener('input', () => clearFieldError(id));
+  });
+  $('name').addEventListener('input', showSuggestions);
+  $('name').addEventListener('focus', showSuggestions);
+  $('name').addEventListener('blur', closeSuggestions);
+  $('name-suggestions').addEventListener('mousedown', (event) => event.preventDefault());
+  $('name-suggestions').addEventListener('click', (event) => {
+    const option = event.target.closest('[data-index]');
+    if (option) chooseStudent(Number(option.dataset.index));
+  });
+  $('name').addEventListener('keydown', (event) => {
+    if (event.key === 'Escape' || event.key === 'Tab') { closeSuggestions(); return; }
+    if (event.key === 'Enter' && !$('name-suggestions').hidden && activeSuggestion >= 0) {
+      event.preventDefault(); chooseStudent(activeSuggestion); return;
+    }
+    if (!['ArrowDown', 'ArrowUp'].includes(event.key)) return;
+    if ($('name-suggestions').hidden) showSuggestions();
+    if (!suggestedStudents.length) return;
+    event.preventDefault();
+    activeSuggestion = activeSuggestion < 0 ? (event.key === 'ArrowDown' ? 0 : suggestedStudents.length - 1)
+      : (activeSuggestion + (event.key === 'ArrowDown' ? 1 : -1) + suggestedStudents.length) % suggestedStudents.length;
+    [...$('name-suggestions').children].forEach((option, index) => option.setAttribute('aria-selected', String(index === activeSuggestion)));
+    $('name').setAttribute('aria-activedescendant', `student-option-${activeSuggestion}`);
   });
   $('cancel-button').addEventListener('click', () => { clearForm(); $('name').focus(); });
   $('search').addEventListener('input', () => { currentPage = 1; render(); });

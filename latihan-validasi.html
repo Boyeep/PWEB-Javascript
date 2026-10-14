@@ -1,0 +1,42 @@
+<!doctype html>
+<html lang="id">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="theme-color" content="#15594b">
+  <meta name="description" content="Latihan JavaScript 1: validasi form registrasi dan validasi email dengan pesan kesalahan, checkbox persetujuan, serta tombol reset.">
+  <title>Lab Validasi | KRS Studio</title>
+  <link rel="icon" type="image/svg+xml" href="assets/favicon.svg">
+  <link rel="stylesheet" href="style.css">
+  <script src="validation.js" defer></script>
+</head>
+<body>
+  <a class="skip-link" href="#main">Lewati ke konten</a>
+  <header class="site-header"><div class="shell header-inner"><a class="brand" href="index.html"><span class="brand-mark" aria-hidden="true">K</span><span>KRS<span class="brand-soft">studio</span><small>Ruang rencana studimu</small></span></a><nav aria-label="Navigasi utama"><a href="index.html#registration">Registrasi</a><a href="index.html#postal-search">Kode pos</a><a class="nav-active" aria-current="page" href="latihan-validasi.html">Validasi form</a></nav><span class="header-tag">PWEB / JAVASCRIPT</span></div></header>
+  <main class="shell lab-main" id="main" tabindex="-1">
+    <div class="lab-intro"><p class="eyebrow">LATIHAN 03 / JAVASCRIPT LATIHAN 1</p><h1>Form yang teliti.<br><span>Data yang berarti.</span></h1><p>Praktikkan validasi form registrasi dan email sebelum data diterima.</p></div>
+    <div class="lab-grid">
+      <section class="panel" aria-labelledby="lab-title"><div class="panel-heading"><div><p class="eyebrow">01 / REGISTRATION FORM</p><h2 id="lab-title">Form registrasi</h2></div></div>
+        <form id="lab-form" class="lab-form" novalidate>
+          <p class="form-hint">Semua kolom wajib diisi.</p>
+          <div id="lab-alert" class="alert alert-danger" role="alert" hidden></div>
+          <div class="field"><label for="lab-name">Nama lengkap</label><input id="lab-name" name="name" type="text" maxlength="80" autocomplete="name" placeholder="Masukkan nama lengkap" required aria-describedby="lab-name-error"><small id="lab-name-error" class="field-error"></small></div>
+          <div class="field"><label for="lab-address">Alamat</label><input id="lab-address" name="address" type="text" maxlength="200" autocomplete="street-address" placeholder="Masukkan alamat" required aria-describedby="lab-address-error"><small id="lab-address-error" class="field-error"></small></div>
+          <div class="field-grid"><div class="field"><label for="lab-email">Email</label><input id="lab-email" name="email" type="email" maxlength="254" autocomplete="email" placeholder="nama@domain.com" required aria-describedby="lab-email-error"><small id="lab-email-error" class="field-error"></small></div><div class="field"><label for="lab-password">Password</label><input id="lab-password" name="password" type="password" minlength="8" maxlength="128" autocomplete="new-password" placeholder="Minimal 8 karakter" required aria-describedby="password-help lab-password-error"><small id="password-help" class="input-help">Password hanya diperiksa pada form latihan ini.</small><small id="lab-password-error" class="field-error"></small></div></div>
+          <div class="field"><label for="lab-course">Pilih kursus</label><select id="lab-course" name="course" required aria-describedby="lab-course-error"><option value="">Pilih kursus</option><option value="HTML & CSS">HTML & CSS</option><option value="JavaScript">JavaScript</option><option value="Pemrograman Web">Pemrograman Web</option></select><small id="lab-course-error" class="field-error"></small></div>
+          <div class="field"><label for="lab-college">Nama perguruan tinggi</label><textarea id="lab-college" name="college" rows="2" maxlength="120" placeholder="Masukkan nama perguruan tinggi" required aria-describedby="lab-college-error"></textarea><small id="lab-college-error" class="field-error"></small></div>
+          <div class="field"><label class="checkbox-label" for="lab-agree"><input id="lab-agree" name="agree" type="checkbox" required aria-describedby="lab-agree-error">Saya menyetujui informasi yang diisi.</label><small id="lab-agree-error" class="field-error"></small></div>
+          <div class="lab-actions"><button class="button button-primary" type="submit">Kirim registrasi</button><button class="button button-secondary" type="reset">Reset form</button></div>
+          <div id="lab-success" class="alert alert-success" role="status" aria-live="polite" hidden></div>
+        </form>
+      </section>
+      <div class="lab-side">
+        <section class="panel" aria-labelledby="email-title"><div class="panel-heading"><div><p class="eyebrow">02 / EMAIL VALIDATION</p><h2 id="email-title">Validasi email</h2></div></div><form id="email-form" class="lab-form" novalidate><p class="form-hint">Coba email kosong, format salah, lalu format yang benar.</p><div class="field"><label for="email-check">Alamat email</label><input id="email-check" name="email" type="email" maxlength="254" autocomplete="email" placeholder="nama@domain.com" required aria-describedby="email-feedback"></div><button class="button button-primary" type="submit">Periksa email</button><p id="email-feedback" class="email-feedback" role="status" aria-live="polite"></p></form></section>
+        <aside class="lab-note"><p class="eyebrow">YANG DIPELAJARI</p><h2>Periksa, lalu terima.</h2><ul><li>Kolom wajib dan input kosong.</li><li>Format email melalui <code>type="email"</code> dan <code>checkValidity()</code>.</li><li>Panjang password minimal 8 karakter.</li><li>Dropdown kursus dan checkbox persetujuan.</li><li>Pesan merah, feedback berhasil, dan reset form.</li></ul><a href="https://codestudio80.blogspot.com/2026/04/javascript-latihan-1.html" target="_blank" rel="noopener noreferrer">Lihat referensi latihan ↗</a></aside>
+      </div>
+    </div>
+    <footer class="site-footer"><span><strong>KRSstudio</strong> / Latihan Pemrograman Web</span><a href="index.html">Kembali ke registrasi & kode pos</a></footer>
+  </main>
+  <noscript><p class="noscript">Aktifkan JavaScript untuk mencoba validasi.</p></noscript>
+</body>
+</html>

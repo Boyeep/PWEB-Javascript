@@ -13,3 +13,5 @@
 File merupakan isi artikel berupa `<article>`, tanpa `html`, `head`, atau `body`. Gaya menggunakan inline CSS agar dapat ditempel sebagai postingan. Screenshot sudah menggunakan URL publik repository `Boyeep/PWEB-Javascript`, tanpa path gambar lokal.
 
 HTML artikel tidak menjalankan aplikasi di dalam Blogger. Tautan demo mengarah ke aplikasi interaktif di GitHub Pages.
+
+Artikel sudah mencakup checklist empat latihan, autocomplete nama, dosen dinamis, pencarian kode pos, dan halaman validasi registrasi/email. Screenshot menggunakan versi terbaru project.

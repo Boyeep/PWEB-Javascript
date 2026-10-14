@@ -1,6 +1,10 @@
 // Dataset kecil untuk latihan dropdown. Detail sumber kode pos ada di docs/SOURCES.md.
 const KRS_DATA = {
   programs: { IF: 'Informatika', SI: 'Sistem Informasi' },
+  lecturers: {
+    D01: 'Dr. Arif Santoso', D02: 'Maya Puspita, M.Kom.',
+    D03: 'Bima Saputra, M.Kom.', D04: 'Dewi Lestari, M.Kom.'
+  },
   courses: {
     IF: [
       { id: 'IF301', name: 'Pemrograman Web', credits: 3 },
@@ -46,3 +50,9 @@ const KRS_DATA = {
     [0, 'IF304', 'B'], [2, 'SI302', 'A']
   ]
 };
+
+// Setiap mata kuliah memiliki pilihan dosen contoh untuk dropdown dinamis.
+Object.values(KRS_DATA.courses).forEach((courses) => courses.forEach((course, index) => {
+  const lecturerIds = Object.keys(KRS_DATA.lecturers);
+  course.lecturers = [lecturerIds[index % 4], lecturerIds[(index + 1) % 4]];
+}));

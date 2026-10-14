@@ -1,11 +1,20 @@
 <article lang="id" style="font-family:Arial,sans-serif;font-size:16px;line-height:1.8;color:#263b34;max-width:900px;margin:0 auto;overflow-wrap:anywhere">
   <p>Pada tugas <strong>Latihan Dropdown &amp; Kode Pos JavaScript</strong>, saya membuat aplikasi registrasi mata kuliah bernama <strong>KRS Studio</strong>. Aplikasi ini menghubungkan data mahasiswa, pilihan mata kuliah, dan alamat melalui form interaktif menggunakan HTML, CSS, dan JavaScript.</p>
-  <p>Fokus latihan adalah mengatur hubungan antar-dropdown dan memanipulasi DOM. Pilihan mata kuliah menyesuaikan program studi, sedangkan kode pos muncul otomatis setelah pengguna memilih kelurahan. Data yang telah disimpan dapat dicari, diedit, dan dihapus melalui tabel.</p>
+  <p>Fokus latihan adalah autocomplete nama, hubungan antar-dropdown, pencarian kode pos, dan validasi form. Pilihan mata kuliah menyesuaikan program studi dan dosen menyesuaikan kuliah yang dipilih. Data yang telah disimpan dapat dicari, diedit, dan dihapus melalui tabel.</p>
 
   <div style="padding:18px 22px;background:#edf3ed;border-left:4px solid #15594b;border-radius:6px;margin:24px 0">
     <strong style="color:#15594b">Konsep KRS Studio</strong>
     <p style="margin:8px 0 0">Tampilan menggunakan warna teal, latar krem, dan ilustrasi buku. Sebagai tambahan, terdapat ringkasan jumlah registrasi, jumlah mahasiswa berdasarkan NIM, akumulasi SKS, serta pengecekan mata kuliah ganda dan batas SKS.</p>
   </div>
+
+  <h2 style="color:#15594b;margin:32px 0 14px;line-height:1.4">Checklist Kesesuaian Latihan</h2>
+  <ol style="padding-left:24px">
+    <li><strong>Selesai:</strong> form nama mahasiswa, NIM, mata kuliah, dan dosen, dengan rekomendasi nama saat mengetik.</li>
+    <li><strong>Selesai untuk dataset latihan:</strong> pencarian kode pos dari provinsi, kabupaten/kota, dan kecamatan, disertai informasi daerah.</li>
+    <li><strong>Selesai:</strong> Latihan JavaScript 1 berupa validasi form registrasi umum dan validasi email.</li>
+    <li><strong>Selesai:</strong> list dropdown dinamis untuk mata kuliah, dosen, dan wilayah.</li>
+  </ol>
+  <p>Detail pemetaan implementasi dan bukti hasil tersedia pada <a href="https://github.com/Boyeep/PWEB-Javascript/blob/main/docs/CHECKLIST.md" target="_blank" rel="noopener noreferrer" style="color:#15594b">checklist project</a>.</p>
 
   <h2 style="color:#15594b;margin:32px 0 14px;line-height:1.4">Tujuan Latihan</h2>
   <ul style="padding-left:24px">
@@ -22,21 +31,25 @@
 +-- style.css
 +-- data.js
 +-- app.js
++-- postal.js
++-- latihan-validasi.html
++-- validation.js
 +-- assets/favicon.svg
 +-- screenshots/
 +-- docs/
 |   +-- blogspot.html
 |   +-- BLOGSPOT.md
 |   +-- SOURCES.md
+|   +-- CHECKLIST.md
 +-- tests/check_app.py
 +-- qa-report.json
 +-- README.md</pre>
-  <p><code>index.html</code> menyimpan struktur antarmuka, <code>style.css</code> mengatur tampilan, <code>data.js</code> menyimpan katalog dan wilayah contoh, sedangkan <code>app.js</code> menangani logika interaktif.</p>
+  <p><code>index.html</code> menyimpan struktur antarmuka, <code>style.css</code> mengatur tampilan, <code>data.js</code> menyimpan katalog dan wilayah contoh, sedangkan <code>app.js</code> menangani registrasi. Pencarian kode pos berada di <code>postal.js</code>, dan latihan validasi memiliki halaman serta script tersendiri.</p>
 
   <h2 style="color:#15594b;margin:32px 0 14px;line-height:1.4">Alur Form Registrasi</h2>
   <ol style="padding-left:24px">
-    <li><strong>Data mahasiswa:</strong> pengguna mengisi nama lengkap, NIM, dan program studi.</li>
-    <li><strong>Mata kuliah:</strong> dropdown hanya menampilkan kuliah dari prodi yang dipilih. Informasi kode kuliah dan SKS langsung diperbarui.</li>
+    <li><strong>Data mahasiswa:</strong> pengguna mengetik nama untuk melihat rekomendasi. Pemilihan rekomendasi mengisi nama, NIM, dan prodi; nama baru tetap boleh diisi sendiri.</li>
+    <li><strong>Mata kuliah dan dosen:</strong> dropdown menampilkan kuliah dari prodi yang dipilih, kemudian dosen mengikuti mata kuliah. Informasi kode kuliah dan SKS diperbarui.</li>
     <li><strong>Alamat:</strong> pengguna memilih provinsi, kota, kecamatan, dan kelurahan secara berurutan.</li>
     <li><strong>Kode pos:</strong> input terisi otomatis berdasarkan kelurahan dan menggunakan atribut <code>readonly</code>.</li>
     <li><strong>Simpan:</strong> data yang valid dimasukkan ke array lalu ditampilkan pada tabel.</li>
@@ -45,10 +58,19 @@
 
   <h2 style="color:#15594b;margin:32px 0 14px;line-height:1.4">Implementasi JavaScript</h2>
   <h3 style="color:#15594b;margin:24px 0 12px;line-height:1.4">1. Data dalam Array Objek</h3>
-  <p>Registrasi disimpan pada array <code>registrations</code>. Setiap objek berisi identitas mahasiswa, prodi, mata kuliah, kelas, dan pilihan wilayah. Aplikasi dimulai dengan delapan registrasi contoh dari tiga mahasiswa fiktif.</p>
+  <p>Registrasi disimpan pada array <code>registrations</code>. Setiap objek berisi identitas mahasiswa, prodi, mata kuliah, dosen, kelas, dan pilihan wilayah. Aplikasi dimulai dengan delapan registrasi contoh dari tiga mahasiswa fiktif. Nama dosen juga menggunakan data contoh.</p>
   <p>Penyimpanan menggunakan memori browser. Perubahan berlaku selama sesi halaman terbuka dan kembali ke data contoh ketika halaman dimuat ulang. Pendekatan ini memudahkan pengamatan perubahan array saat latihan.</p>
 
-  <h3 style="color:#15594b;margin:24px 0 12px;line-height:1.4">2. Dropdown Mata Kuliah</h3>
+  <h3 style="color:#15594b;margin:24px 0 12px;line-height:1.4">2. Autocomplete Nama Mahasiswa</h3>
+  <p>Event <code>input</code> memfilter direktori mahasiswa berdasarkan huruf yang diketik. Contohnya, ketikan “Na” menampilkan “Nadia Putri”. Daftar rekomendasi dapat dipilih dengan mouse, tombol panah, dan Enter. Escape menutup daftar.</p>
+  <pre style="padding:18px;background:#f4f6f1;border:1px solid #dce4d8;border-radius:8px;overflow-x:auto;white-space:pre;font-size:14px;line-height:1.7"><code>const query = $('name').value.trim().toLocaleLowerCase('id');
+suggestedStudents = query
+  ? KRS_DATA.students.filter((student) =&gt;
+      student.name.toLocaleLowerCase('id').includes(query))
+  : [];</code></pre>
+  <p>Input menggunakan pola combobox dengan daftar rekomendasi. Penjelasan atribut dan interaksi keyboard mengacu pada <a href="https://developer.mozilla.org/en-US/docs/Web/Accessibility/ARIA/Reference/Roles/combobox_role" target="_blank" rel="noopener noreferrer" style="color:#15594b">referensi combobox MDN</a>.</p>
+
+  <h3 style="color:#15594b;margin:24px 0 12px;line-height:1.4">3. Dropdown Mata Kuliah dan Dosen</h3>
   <p>Fungsi <code>updateCourses()</code> mengambil katalog berdasarkan program studi, lalu membentuk opsi baru dengan <code>setOptions()</code>. Ketika prodi berubah, pilihan kuliah sebelumnya dikosongkan agar tidak tersimpan sebagai pilihan yang tidak sesuai.</p>
   <pre style="padding:18px;background:#f4f6f1;border:1px solid #dce4d8;border-radius:8px;overflow-x:auto;white-space:pre;font-size:14px;line-height:1.7"><code>function updateCourses() {
   const program = $('program').value;
@@ -58,9 +80,11 @@
       [item.id, `${item.name} (${item.credits} SKS)`]),
     program ? 'Pilih mata kuliah' : 'Pilih prodi terlebih dahulu');
   updateCourseInfo();
+  updateLecturers();
 }</code></pre>
+  <p><code>updateLecturers()</code> membentuk pilihan dosen sesuai mata kuliah. Ketika kuliah atau prodi diganti, dosen yang dipilih sebelumnya dikosongkan agar tetap sesuai.</p>
 
-  <h3 style="color:#15594b;margin:24px 0 12px;line-height:1.4">3. Dropdown Wilayah dan Kode Pos</h3>
+  <h3 style="color:#15594b;margin:24px 0 12px;line-height:1.4">4. Dropdown Wilayah dan Kode Pos</h3>
   <p>Dropdown wilayah mengikuti alur <strong>provinsi → kota → kecamatan → kelurahan</strong>. Pilihan turunan dinonaktifkan sampai induknya terisi. Saat provinsi, kota, atau kecamatan diganti, seluruh pilihan turunannya direset, termasuk kode pos.</p>
   <p>Fungsi berikut membaca kode pos melalui objek wilayah bertingkat. Jika salah satu pilihan belum tersedia, nilai yang dikembalikan adalah string kosong.</p>
   <pre style="padding:18px;background:#f4f6f1;border:1px solid #dce4d8;border-radius:8px;overflow-x:auto;white-space:pre;font-size:14px;line-height:1.7"><code>function getPostalCode(record) {
@@ -71,11 +95,11 @@
 }</code></pre>
   <p>Dataset dibatasi pada dua provinsi, dua kota, empat kecamatan, dan enam kelurahan di Makassar serta Bandung. Pembatasan ini menjaga fokus pada logika dropdown. Referensi setiap kode pos tersedia pada <a href="https://github.com/Boyeep/PWEB-Javascript/blob/main/docs/SOURCES.md" target="_blank" rel="noopener noreferrer" style="color:#15594b">dokumentasi sumber dataset</a>.</p>
 
-  <h3 style="color:#15594b;margin:24px 0 12px;line-height:1.4">4. Submit dan Validasi</h3>
-  <p>Event <code>submit</code> memeriksa kolom wajib, format NIM 6 sampai 15 digit, mata kuliah yang sesuai prodi, kelas, dan kelengkapan wilayah. Input yang tidak valid ditandai dengan pesan <em>danger</em> merah dan keterangan pada kolom terkait.</p>
+  <h3 style="color:#15594b;margin:24px 0 12px;line-height:1.4">5. Submit dan Validasi</h3>
+  <p>Event <code>submit</code> memeriksa kolom wajib, format NIM 6 sampai 15 digit, mata kuliah yang sesuai prodi, dosen yang sesuai kuliah, kelas, dan kelengkapan wilayah. Input yang tidak valid ditandai dengan pesan <em>danger</em> merah dan keterangan pada kolom terkait.</p>
   <p>Terdapat dua aturan tambahan: mata kuliah yang sama tidak boleh didaftarkan dua kali untuk NIM yang sama, meskipun kelasnya berbeda, serta total kredit dibatasi maksimal 24 SKS per NIM. Batas ini merupakan aturan simulasi tugas.</p>
 
-  <h3 style="color:#15594b;margin:24px 0 12px;line-height:1.4">5. Fungsi render(), Search, dan Pagination</h3>
+  <h3 style="color:#15594b;margin:24px 0 12px;line-height:1.4">6. Fungsi render(), Search, dan Pagination</h3>
   <p><code>render()</code> menyelaraskan isi tabel dengan data terkini. Pencarian dilakukan tanpa membedakan huruf besar dan kecil, kemudian hasilnya dibagi menjadi halaman berisi lima atau sepuluh registrasi.</p>
   <pre style="padding:18px;background:#f4f6f1;border:1px solid #dce4d8;border-radius:8px;overflow-x:auto;white-space:pre;font-size:14px;line-height:1.7"><code>const filtered = filteredRecords();
 const totalPages = Math.max(1,
@@ -88,9 +112,18 @@ $('registration-rows').replaceChildren(
 );</code></pre>
   <p>Badge menunjukkan jumlah hasil pencarian. Ringkasan di bagian atas menunjukkan seluruh registrasi, jumlah NIM berbeda, dan akumulasi SKS. Setelah pencarian berubah, halaman aktif kembali ke halaman pertama.</p>
 
-  <h3 style="color:#15594b;margin:24px 0 12px;line-height:1.4">6. Edit dan Hapus</h3>
+  <h3 style="color:#15594b;margin:24px 0 12px;line-height:1.4">7. Edit dan Hapus</h3>
   <p>Tombol edit mengisi kembali seluruh form, termasuk dropdown yang dibangun berurutan dari induk ke turunan. Simpan perubahan memperbarui objek lama, sedangkan batal edit mengakhiri mode edit tanpa mengubah data.</p>
   <p>Tombol hapus membuka dialog konfirmasi. Data hanya dihapus setelah pengguna memilih “Ya, hapus”. Tabel dan pagination diperbarui, termasuk ketika penghapusan membuat halaman terakhir kosong.</p>
+
+  <h2 style="color:#15594b;margin:32px 0 14px;line-height:1.4">Pencarian Kode Pos Indonesia</h2>
+  <p>Selain kode pos otomatis dalam registrasi, terdapat form pencarian tersendiri. Pengguna cukup memilih provinsi, kabupaten/kota, dan kecamatan, lalu menekan “Cari kode pos”. Hasil menampilkan kode pos serta informasi kelurahan, kecamatan, kota, dan provinsi.</p>
+  <p>Kata kunci tambahan dapat digunakan untuk menyaring nama kelurahan atau kode pos. Contohnya, memilih Panakkukang menampilkan dua kelurahan contoh. Dataset latihan memuat enam kelurahan di Makassar dan Bandung, sehingga belum mencakup seluruh wilayah Indonesia.</p>
+
+  <h2 style="color:#15594b;margin:32px 0 14px;line-height:1.4">Latihan JavaScript 1: Validasi Form dan Email</h2>
+  <p>Mengikuti <a href="https://codestudio80.blogspot.com/2026/04/javascript-latihan-1.html" target="_blank" rel="noopener noreferrer" style="color:#15594b">referensi Latihan JavaScript 1</a>, saya membuat halaman tambahan dengan dua form. Form registrasi umum berisi nama, alamat, email, password, pilihan kursus, nama perguruan tinggi, dan checkbox persetujuan, dilengkapi tombol kirim serta reset.</p>
+  <p>JavaScript memeriksa kolom wajib, format email melalui <code>checkValidity()</code>, password minimal delapan karakter, dan persetujuan. Form email mandiri menampilkan feedback untuk email kosong, format salah, atau format valid. Prinsip validasi mengacu pada <a href="https://developer.mozilla.org/en-US/docs/Learn_web_development/Extensions/Forms/Form_validation" target="_blank" rel="noopener noreferrer" style="color:#15594b">dokumentasi validasi form MDN</a>.</p>
+  <p>Form ini mempraktikkan validasi di browser. Password tidak ditampilkan dalam hasil atau disimpan, dan data tidak dikirim ke server.</p>
 
   <h2 style="color:#15594b;margin:32px 0 14px;line-height:1.4">Tampilan dan Responsivitas</h2>
   <p>Pada desktop, form berada di kiri dan tabel di kanan. Pada layar kecil, keduanya disusun dalam satu kolom. Tabel memiliki area scroll tersendiri agar semua kolom tetap dapat diakses tanpa membuat halaman melebar.</p>
@@ -98,23 +131,38 @@ $('registration-rows').replaceChildren(
 
   <h2 style="color:#15594b;margin:32px 0 14px;line-height:1.4">Hasil Website</h2>
   <figure style="margin:24px 0;text-align:center">
-    <a href="https://raw.githubusercontent.com/Boyeep/PWEB-Javascript/main/screenshots/desktop.png" target="_blank" rel="noopener noreferrer"><img src="https://raw.githubusercontent.com/Boyeep/PWEB-Javascript/main/screenshots/desktop.png" alt="Tampilan desktop KRS Studio dengan form registrasi, dropdown, tabel, pencarian, dan pagination" width="1440" height="1787" loading="lazy" style="width:100%;max-width:100%;height:auto;border:1px solid #dce4d8;border-radius:10px"></a>
+    <a href="https://raw.githubusercontent.com/Boyeep/PWEB-Javascript/main/screenshots/desktop.png" target="_blank" rel="noopener noreferrer"><img src="https://raw.githubusercontent.com/Boyeep/PWEB-Javascript/main/screenshots/desktop.png" alt="Tampilan desktop KRS Studio dengan form registrasi, dropdown, tabel, pencarian, dan pagination" width="1440" height="2314" loading="lazy" style="width:100%;max-width:100%;height:auto;border:1px solid #dce4d8;border-radius:10px"></a>
     <figcaption style="margin-top:10px;color:#64746b;font-size:14px">Tampilan desktop dengan ringkasan registrasi dan form dalam tiga bagian.</figcaption>
   </figure>
   <figure style="margin:28px 0;text-align:center">
-    <a href="https://raw.githubusercontent.com/Boyeep/PWEB-Javascript/main/screenshots/edit.png" target="_blank" rel="noopener noreferrer"><img src="https://raw.githubusercontent.com/Boyeep/PWEB-Javascript/main/screenshots/edit.png" alt="Mode edit registrasi dengan dropdown alamat yang terisi dan kode pos otomatis 90231" width="1440" height="1787" loading="lazy" style="width:100%;max-width:100%;height:auto;border:1px solid #dce4d8;border-radius:10px"></a>
+    <a href="https://raw.githubusercontent.com/Boyeep/PWEB-Javascript/main/screenshots/edit.png" target="_blank" rel="noopener noreferrer"><img src="https://raw.githubusercontent.com/Boyeep/PWEB-Javascript/main/screenshots/edit.png" alt="Mode edit registrasi dengan dropdown alamat yang terisi dan kode pos otomatis 90231" width="1440" height="2314" loading="lazy" style="width:100%;max-width:100%;height:auto;border:1px solid #dce4d8;border-radius:10px"></a>
     <figcaption style="margin-top:10px;color:#64746b;font-size:14px">Mode edit memuat pilihan prodi, mata kuliah, kelas, wilayah, dan kode pos.</figcaption>
   </figure>
   <figure style="margin:28px 0;text-align:center">
-    <a href="https://raw.githubusercontent.com/Boyeep/PWEB-Javascript/main/screenshots/mobile.png" target="_blank" rel="noopener noreferrer"><img src="https://raw.githubusercontent.com/Boyeep/PWEB-Javascript/main/screenshots/mobile.png" alt="Tampilan KRS Studio pada ponsel dengan form dan daftar registrasi dalam satu kolom" width="375" height="2972" loading="lazy" style="width:320px;max-width:100%;height:auto;border:1px solid #dce4d8;border-radius:10px"></a>
+    <a href="https://raw.githubusercontent.com/Boyeep/PWEB-Javascript/main/screenshots/mobile.png" target="_blank" rel="noopener noreferrer"><img src="https://raw.githubusercontent.com/Boyeep/PWEB-Javascript/main/screenshots/mobile.png" alt="Tampilan KRS Studio pada ponsel dengan form dan daftar registrasi dalam satu kolom" width="375" height="4229" loading="lazy" style="width:320px;max-width:100%;height:auto;border:1px solid #dce4d8;border-radius:10px"></a>
     <figcaption style="margin-top:10px;color:#64746b;font-size:14px">Tampilan ponsel. Tabel dapat digeser untuk melihat alamat serta tombol edit dan hapus.</figcaption>
   </figure>
   <p><a href="https://raw.githubusercontent.com/Boyeep/PWEB-Javascript/main/screenshots/validation.png" target="_blank" rel="noopener noreferrer" style="color:#15594b">Lihat screenshot validasi danger merah</a>.</p>
+  <figure style="margin:28px 0;text-align:center">
+    <a href="https://raw.githubusercontent.com/Boyeep/PWEB-Javascript/main/screenshots/autocomplete.png" target="_blank" rel="noopener noreferrer"><img src="https://raw.githubusercontent.com/Boyeep/PWEB-Javascript/main/screenshots/autocomplete.png" alt="Rekomendasi Nadia Putri muncul ketika nama mahasiswa diketik Na" width="370" height="1162" loading="lazy" style="width:320px;max-width:100%;height:auto;border:1px solid #dce4d8;border-radius:10px"></a>
+    <figcaption style="margin-top:10px;color:#64746b;font-size:14px">Autocomplete nama mahasiswa dan dropdown dosen pada form registrasi.</figcaption>
+  </figure>
+  <figure style="margin:28px 0;text-align:center">
+    <a href="https://raw.githubusercontent.com/Boyeep/PWEB-Javascript/main/screenshots/postal-search.png" target="_blank" rel="noopener noreferrer"><img src="https://raw.githubusercontent.com/Boyeep/PWEB-Javascript/main/screenshots/postal-search.png" alt="Hasil pencarian kode pos Panakkukang menampilkan Masale dan Karampuang beserta informasi wilayah" width="1320" height="656" loading="lazy" style="width:100%;max-width:100%;height:auto;border:1px solid #dce4d8;border-radius:10px"></a>
+    <figcaption style="margin-top:10px;color:#64746b;font-size:14px">Pencarian kode pos dengan input sampai tingkat kecamatan.</figcaption>
+  </figure>
+  <figure style="margin:28px 0;text-align:center">
+    <a href="https://raw.githubusercontent.com/Boyeep/PWEB-Javascript/main/screenshots/form-validation.png" target="_blank" rel="noopener noreferrer"><img src="https://raw.githubusercontent.com/Boyeep/PWEB-Javascript/main/screenshots/form-validation.png" alt="Halaman latihan validasi dengan registration form dan form pemeriksaan email" width="1440" height="1123" loading="lazy" style="width:100%;max-width:100%;height:auto;border:1px solid #dce4d8;border-radius:10px"></a>
+    <figcaption style="margin-top:10px;color:#64746b;font-size:14px">Halaman Latihan JavaScript 1 dengan form registrasi umum dan validasi email.</figcaption>
+  </figure>
 
   <h2 style="color:#15594b;margin:32px 0 14px;line-height:1.4">Pengujian</h2>
-  <p>Pengujian menggunakan Chrome dalam mode headless melalui Playwright. Seluruh <strong>19 kelompok pemeriksaan lolos</strong>, tanpa error JavaScript atau console selama pengujian.</p>
+  <p>Pengujian menggunakan Chrome dalam mode headless melalui Playwright. Seluruh <strong>28 kelompok pemeriksaan lolos</strong>, tanpa error JavaScript atau console selama pengujian.</p>
   <ul style="padding-left:24px">
     <li>Dropdown prodi dan mata kuliah, cascade wilayah, reset pilihan turunan, serta kode pos otomatis.</li>
+    <li>Autocomplete dengan mouse/keyboard, autofill NIM/prodi, dropdown dosen, dan dosen wajib.</li>
+    <li>Pencarian kode pos sampai kecamatan, kata kunci nama/kode pos, dan informasi daerah.</li>
+    <li>Validasi form registrasi umum, checkbox, password, tombol reset, dan validasi email mandiri.</li>
     <li>Validasi, tambah, edit, batal, hapus dengan konfirmasi, dan pembaruan ringkasan.</li>
     <li>Pencarian, pagination, hasil kosong, serta penghapusan data terakhir pada sebuah halaman.</li>
     <li>Pencegahan mata kuliah ganda dan batas SKS, termasuk perhitungan ketika diedit.</li>
@@ -127,6 +175,7 @@ $('registration-rows').replaceChildren(
   <p>Buka <code>index.html</code> di browser modern. Alternatifnya, jalankan <code>python -m http.server 8000</code> dari folder proyek, lalu buka <code>http://localhost:8000</code>. Aplikasi tidak memerlukan framework atau proses build.</p>
   <p><strong>Source code GitHub:</strong><br><a href="https://github.com/Boyeep/PWEB-Javascript" target="_blank" rel="noopener noreferrer" style="color:#15594b">PWEB-Javascript</a></p>
   <p><strong>Demo interaktif:</strong><br><a href="https://boyeep.github.io/PWEB-Javascript/" target="_blank" rel="noopener noreferrer" style="color:#15594b">KRS Studio di GitHub Pages</a></p>
+  <p><strong>Demo latihan validasi:</strong><br><a href="https://boyeep.github.io/PWEB-Javascript/latihan-validasi.html" target="_blank" rel="noopener noreferrer" style="color:#15594b">Registration Form dan Email Validation</a></p>
 
   <h2 style="color:#15594b;margin:32px 0 14px;line-height:1.4">Hasil Pembelajaran</h2>
   <p>Melalui latihan ini, saya memahami bagaimana event <code>change</code>, <code>input</code>, dan <code>submit</code> menghubungkan form dengan data. Saya juga mempelajari cara menjaga konsistensi pilihan dropdown, membaca objek bertingkat, memvalidasi input, serta memperbarui tabel ketika array berubah.</p>

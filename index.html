@@ -10,6 +10,7 @@
   <link rel="stylesheet" href="style.css">
   <script src="data.js" defer></script>
   <script src="app.js" defer></script>
+  <script src="postal.js" defer></script>
 </head>
 <body>
   <a class="skip-link" href="#main">Lewati ke konten</a>
@@ -28,7 +29,7 @@
   <header class="site-header">
     <div class="shell header-inner">
       <a class="brand" href="#main"><span class="brand-mark"><svg class="icon" aria-hidden="true"><use href="#i-book"/></svg></span><span>KRS<span class="brand-soft">studio</span><small>Ruang rencana studimu</small></span></a>
-      <nav aria-label="Navigasi utama"><a class="nav-active" href="#registration">Registrasi</a><a href="#guide">Panduan</a><a href="https://github.com/Boyeep/PWEB-Javascript" target="_blank" rel="noopener noreferrer">Source code <span aria-hidden="true">↗</span></a></nav>
+      <nav aria-label="Navigasi utama"><a class="nav-active" href="#registration">Registrasi</a><a href="#postal-search">Kode pos</a><a href="latihan-validasi.html">Validasi form</a><a href="https://github.com/Boyeep/PWEB-Javascript" target="_blank" rel="noopener noreferrer">Source code <span aria-hidden="true">↗</span></a></nav>
       <span class="header-tag">PWEB / JAVASCRIPT</span>
     </div>
   </header>
@@ -57,12 +58,13 @@
           <p class="form-hint">Semua kolom wajib diisi.</p>
           <div id="form-alert" class="alert alert-danger" role="alert" hidden></div>
           <fieldset><legend><span>01</span> Data mahasiswa</legend>
-            <div class="field"><label for="name">Nama lengkap</label><input id="name" name="name" type="text" maxlength="80" autocomplete="name" placeholder="Nama sesuai data mahasiswa" required aria-describedby="name-error"><small class="field-error" id="name-error"></small></div>
+            <div class="field autocomplete-field"><label for="name">Nama mahasiswa</label><input id="name" name="name" type="text" maxlength="80" autocomplete="off" placeholder="Ketik nama, misalnya Na…" required role="combobox" aria-autocomplete="list" aria-expanded="false" aria-controls="name-suggestions" aria-describedby="name-help name-error"><div id="name-suggestions" class="name-suggestions" role="listbox" aria-label="Rekomendasi mahasiswa" hidden></div><small id="name-help" class="input-help">Ketik huruf untuk rekomendasi. Nama baru juga boleh diisi.</small><small class="field-error" id="name-error"></small></div>
             <div class="field-grid"><div class="field"><label for="nim">NIM</label><input id="nim" name="nim" type="text" inputmode="numeric" maxlength="15" placeholder="6–15 digit" required aria-describedby="nim-error"><small class="field-error" id="nim-error"></small></div><div class="field"><label for="program">Program studi</label><select id="program" name="program" required aria-describedby="program-error"><option value="">Pilih prodi</option></select><small class="field-error" id="program-error"></small></div></div>
           </fieldset>
           <fieldset><legend><span>02</span> Rencana mata kuliah</legend>
             <div class="field"><label for="course">Mata kuliah</label><select id="course" name="course" required disabled aria-describedby="course-error"><option value="">Pilih prodi terlebih dahulu</option></select><small class="field-error" id="course-error"></small></div>
             <div class="course-meta"><span id="course-info">Detail mata kuliah akan muncul di sini.</span><strong id="course-credits">0 SKS</strong></div>
+            <div class="field"><label for="lecturer">Dosen pengampu</label><select id="lecturer" name="lecturer" required disabled aria-describedby="lecturer-error"><option value="">Pilih mata kuliah dahulu</option></select><small class="field-error" id="lecturer-error"></small></div>
             <div class="field"><label for="class-group">Kelas</label><select id="class-group" name="classGroup" required aria-describedby="class-group-error"><option value="">Pilih kelas</option><option value="A">Kelas A</option><option value="B">Kelas B</option></select><small class="field-error" id="class-group-error"></small></div>
           </fieldset>
           <fieldset><legend><span>03</span> Alamat & kode pos</legend>
@@ -79,13 +81,24 @@
         <div class="panel-heading"><div><p class="eyebrow">02 / KELOLA RENCANA</p><h2 id="list-title">Daftar registrasi <span class="count-badge" id="list-count">0</span></h2></div><span class="session-tag"><span></span>SESI DEMO</span></div>
         <p class="list-description">Rencana kuliah yang sudah kamu tambahkan.</p>
         <div class="toolbar"><div class="search-field"><svg class="icon" aria-hidden="true"><use href="#i-search"/></svg><label class="sr-only" for="search">Cari registrasi</label><input id="search" type="search" placeholder="Cari nama, NIM, mata kuliah, atau kode pos…"></div><div class="page-size-field"><label for="page-size">Per halaman</label><select id="page-size"><option value="5">5</option><option value="10">10</option></select></div></div>
-        <div class="table-scroll" role="region" aria-label="Tabel registrasi, geser untuk melihat semua kolom" tabindex="0"><table><caption class="sr-only">Daftar mahasiswa, mata kuliah, kelas, SKS, wilayah, dan aksi registrasi</caption><thead><tr><th scope="col">Mahasiswa</th><th scope="col">Mata kuliah</th><th scope="col">Alamat</th><th scope="col">Aksi</th></tr></thead><tbody id="registration-rows"></tbody></table></div>
+        <div class="table-scroll" role="region" aria-label="Tabel registrasi, geser untuk melihat semua kolom" tabindex="0"><table><caption class="sr-only">Daftar mahasiswa, mata kuliah, dosen, kelas, SKS, wilayah, dan aksi registrasi</caption><thead><tr><th scope="col">Mahasiswa</th><th scope="col">Mata kuliah & dosen</th><th scope="col">Alamat</th><th scope="col">Aksi</th></tr></thead><tbody id="registration-rows"></tbody></table></div>
         <div class="empty-state" id="empty-state" hidden><svg class="icon" aria-hidden="true"><use href="#i-search"/></svg><h3 id="empty-title">Belum ada registrasi</h3><p id="empty-message">Isi form untuk memulai rencana studimu.</p><button class="button button-secondary" type="button" id="clear-search" hidden>Hapus pencarian</button></div>
         <div class="pagination-bar"><p id="pagination-info" role="status" aria-live="polite"></p><nav class="pagination" aria-label="Halaman data"><button type="button" id="prev-page" aria-label="Halaman sebelumnya"><svg class="icon" aria-hidden="true"><use href="#i-left"/></svg></button><div id="page-numbers"></div><button type="button" id="next-page" aria-label="Halaman berikutnya"><svg class="icon" aria-hidden="true"><use href="#i-right"/></svg></button></nav></div>
         <div class="session-note"><span class="note-dot"></span><p>Mulai dengan 8 registrasi contoh. Perubahan berlaku selama sesi dan kembali ke data contoh saat halaman dimuat ulang.</p></div>
         <div class="guide" id="guide"><span class="guide-kicker">CARA KERJANYA</span><h3>Dari pilihan, jadi rencana.</h3><ol><li><span>1</span><div><strong>Lengkapi identitas</strong><p>Isi nama, NIM, dan program studi.</p></div></li><li><span>2</span><div><strong>Pilih kuliah & alamat</strong><p>Opsi mengikuti pilihan sebelumnya. Kode pos terisi otomatis.</p></div></li><li><span>3</span><div><strong>Simpan & kelola</strong><p>Cari, edit, atau hapus registrasi langsung dari tabel.</p></div></li></ol><p class="guide-foot">Satu mata kuliah per registrasi · Maksimal 24 SKS per NIM</p></div>
       </section>
     </div>
+    <section class="panel postal-panel" id="postal-search" aria-labelledby="postal-title">
+      <div class="panel-heading"><div><p class="eyebrow">LATIHAN 02 / TEMUKAN DAERAH</p><h2 id="postal-title">Pencarian kode pos Indonesia</h2></div><span class="round-icon"><svg class="icon" aria-hidden="true"><use href="#i-pin"/></svg></span></div>
+      <p class="list-description">Pilih provinsi, kabupaten/kota, dan kecamatan untuk melihat kode pos beserta informasi daerah.</p>
+      <form id="postal-search-form" class="postal-search-form" novalidate>
+        <div class="postal-filters"><div class="field"><label for="lookup-province">Provinsi</label><select id="lookup-province" required><option value="">Pilih provinsi</option></select></div><div class="field"><label for="lookup-city">Kabupaten / Kota</label><select id="lookup-city" required disabled><option value="">Pilih provinsi dahulu</option></select></div><div class="field"><label for="lookup-district">Kecamatan</label><select id="lookup-district" required disabled><option value="">Pilih kota dahulu</option></select></div></div>
+        <div class="postal-query"><div class="field"><label for="lookup-keyword">Kata kunci tambahan <span class="optional-label">(opsional)</span></label><input id="lookup-keyword" type="search" placeholder="Nama kelurahan atau kode pos"></div><button class="button button-primary" type="submit">Cari kode pos <svg class="icon" aria-hidden="true"><use href="#i-search"/></svg></button></div>
+        <div class="alert alert-danger" id="lookup-error" role="alert" hidden></div>
+        <p class="input-help">Dataset latihan: sebagian wilayah Makassar dan Bandung, 2 provinsi dan 6 kelurahan.</p>
+      </form>
+      <div class="postal-output"><p id="lookup-summary" role="status" aria-live="polite">Pilih wilayah, lalu tekan Cari kode pos.</p><div id="lookup-results" class="postal-results"></div></div>
+    </section>
     <footer class="site-footer"><span><strong>KRSstudio</strong> / Latihan Pemrograman Web</span><span>HTML + CSS + JavaScript <span class="footer-dot">•</span> Dibuat untuk belajar</span></footer>
   </main>
   <div id="toast" class="toast" role="status" aria-live="polite" hidden></div>
